@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>520: Crew Control</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="game-container">
+    <h1 id="game-title">520: Crew Control</h1>
+
+    <div id="status-panel">
+      <div id="mission-status" aria-live="polite"></div>
+      <div id="crew-stats"></div>
+      <div id="org-stats"></div>
+      <div id="astronaut-stats"></div>
+    </div>
+
+    <div id="event-panel">
+      <p id="event-description">Prepare to guide your crew through a 520-day mission to Mars. Maintain morale, cohesion, and keep stress in check.</p>
+    </div>
+
+    <div id="choices-panel" aria-live="polite"></div>
+
+    <div id="result-panel">
+      <p id="result-text"></p>
+    </div>
+
+    <div id="control-panel">
+      <button id="start-button">Start Mission</button>
+      <button id="next-button" disabled>Next</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
