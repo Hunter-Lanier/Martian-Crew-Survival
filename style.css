@@ -1,0 +1,141 @@
+body {
+  background-color: #050505;
+  color: #e0ffe0;
+  font-family: "Fira Code", "Courier New", monospace;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+}
+
+#game-container {
+  width: 100%;
+  max-width: 900px;
+  border: 1px solid #2c852c;
+  border-radius: 6px;
+  padding: 20px;
+  background: linear-gradient(145deg, #0a0f0a, #040604);
+  box-shadow: 0 0 20px rgba(44, 133, 44, 0.2);
+}
+
+#game-title {
+  text-align: center;
+  margin: 0 0 10px;
+  letter-spacing: 1px;
+  color: #90ff90;
+}
+
+#status-panel,
+#event-panel {
+  border: 1px solid #2c852c;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: rgba(10, 20, 10, 0.4);
+}
+
+#mission-status {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+#crew-stats,
+#org-stats {
+  margin-bottom: 8px;
+}
+
+#astronaut-stats .astronaut {
+  margin-bottom: 6px;
+}
+
+#event-panel {
+  min-height: 90px;
+}
+
+#event-description {
+  margin: 0;
+  line-height: 1.4;
+}
+
+#choices-panel button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin: 5px 0;
+  padding: 10px 12px;
+  background: #0d0f0d;
+  border: 1px solid #2c852c;
+  border-radius: 4px;
+  color: #e0ffe0;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+#choices-panel button:hover {
+  background: #162016;
+  transform: translateY(-1px);
+}
+
+#choices-panel button:disabled,
+#next-button:disabled,
+#start-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#result-panel {
+  min-height: 40px;
+  font-style: italic;
+  margin-top: 10px;
+  color: #a8f3a8;
+}
+
+#control-panel {
+  margin-top: 12px;
+  text-align: right;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+#control-panel button {
+  padding: 10px 14px;
+  background: #0d0f0d;
+  border: 1px solid #2c852c;
+  border-radius: 4px;
+  color: #e0ffe0;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+#control-panel button:hover:not(:disabled) {
+  background: #162016;
+  transform: translateY(-1px);
+}
+
+#end-summary {
+  margin-top: 10px;
+  border-top: 1px solid #2c852c;
+  padding-top: 10px;
+  line-height: 1.5;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.stat-label {
+  color: #7ff07f;
+}
+
+.stat-value {
+  font-weight: bold;
+}
+
+.small-text {
+  color: #a7cfa7;
+  font-size: 0.9rem;
+}
