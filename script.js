@@ -12,6 +12,17 @@ let gameState;
 let currentEvent = null;
 let waitingForChoice = false;
 
+function removeElement(element) {
+  if (!element) return;
+  if (typeof element.remove === "function") {
+    element.remove();
+    return;
+  }
+  if (element.parentNode) {
+    element.parentNode.removeChild(element);
+  }
+}
+
 function createInitialState() {
   return {
     month: 1,
@@ -757,7 +768,7 @@ function startGame() {
   nextButton.disabled = true;
   nextButton.textContent = "Next";
   const endSummary = document.getElementById("end-summary");
-  if (endSummary) endSummary.remove();
+  removeElement(endSummary);
   renderIntro();
   startTurn();
 }
@@ -826,7 +837,9 @@ function handleChoice(choiceIndex) {
 
 function disableChoiceButtons() {
   const buttons = choicesPanelEl.querySelectorAll("button");
-  buttons.forEach((btn) => (btn.disabled = true));
+  for (let i = 0; i < buttons.length; i += 1) {
+    buttons[i].disabled = true;
+  }
 }
 
 function nextTurn() {
@@ -876,7 +889,7 @@ function renderEndSummary() {
   `;
 
   const existing = document.getElementById("end-summary");
-  if (existing) existing.remove();
+  removeElement(existing);
   eventDescriptionEl.parentElement.appendChild(summary);
 }
 
@@ -934,6 +947,7 @@ function renderChoices() {
   currentEvent.choices.forEach((choice, index) => {
     const button = document.createElement("button");
     button.textContent = choice.text;
+    button.type = "button";
     button.addEventListener("click", () => handleChoice(index));
     choicesPanelEl.appendChild(button);
   });
