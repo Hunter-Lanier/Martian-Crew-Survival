@@ -75,6 +75,7 @@ const events = [
       {
         text: "Assign personal resilience training modules for each crew member.",
         effects: (state) => {
+          // Target B and D as more introspective/psych-focused
           state.astronauts[1].stress -= 10;
           state.astronauts[1].fatigue += 5;
           state.astronauts[3].stress -= 10;
@@ -103,6 +104,7 @@ const events = [
       {
         text: "Proactively support the most stressed astronaut.",
         effects: (state) => {
+          // Find max-stress astronaut
           let maxIndex = 0;
           let maxStress = -1;
           state.astronauts.forEach((a, i) => {
@@ -186,7 +188,7 @@ const events = [
       {
         text: "Schedule one-on-one check-ins to monitor them closely.",
         effects: (state) => {
-          state.astronauts[3].stress -= 8;
+          state.astronauts[3].stress -= 8; // medic/psych helps them process
           state.astronauts[3].fatigue += 3;
           state.nasaSupport -= 5;
         },
@@ -329,76 +331,6 @@ const events = [
         text: "Schedule mandatory group recreation.",
         effects: (state) => {
           state.cohesion += 9;
-  {
-    id: "maintenance",
-    description: "A minor equipment malfunction requires extra time to repair.",
-    choices: [
-      {
-        text: "Assign the pilot to handle it solo.",
-        effects: (state) => {
-          state.cohesion += 2;
-          state.astronauts[0].fatigue += 6;
-          state.astronauts[0].stress += 3;
-        },
-        resultText: "The pilot takes on the extra workload and keeps the team focused.",
-      },
-      {
-        text: "Split the job between all crew members.",
-        effects: (state) => {
-          state.morale -= 3;
-          state.astronauts.forEach((a) => {
-            a.fatigue += 3;
-          });
-        },
-        resultText: "Everyone contributes, though enthusiasm dips a little.",
-      },
-      {
-        text: "Delay the repair and monitor.",
-        effects: (state) => {
-          state.morale -= 5;
-          state.conflictRisk += 5;
-          state.nasaSupport -= 5;
-        },
-        resultText: "The issue lingers and HQ is displeased.",
-      },
-    ],
-  },
-  {
-    id: "communication",
-    description: "A communications blackout with Earth causes uncertainty for a day.",
-    choices: [
-      {
-        text: "Run a team reflection session.",
-        effects: (state) => {
-          state.cohesion += 4;
-          state.morale += 3;
-          state.astronauts.forEach((a) => {
-            a.connection += 4;
-          });
-        },
-        resultText: "Sharing worries openly strengthens trust.",
-      },
-      {
-        text: "Keep crew on routine tasks to avoid panic.",
-        effects: (state) => {
-          state.morale -= 2;
-          state.astronauts.forEach((a) => {
-            a.stress += 2;
-          });
-        },
-        resultText: "Focus on routine keeps them busy but tension lingers.",
-      },
-    ],
-  },
-  {
-    id: "exercise",
-    description: "VR exercise system shows degraded performance.",
-    choices: [
-      {
-        text: "Dedicate time to recalibrate the VR system.",
-        effects: (state) => {
-          state.vrSystemHealth += 8;
-          state.nasaSupport -= 4;
           state.astronauts.forEach((a) => {
             a.fatigue += 3;
           });
@@ -569,6 +501,7 @@ const events = [
       {
         text: "Reserve VR for the most isolated crew member.",
         effects: (state) => {
+          // Assume D is more emotionally tuned-in, for example
           state.astronauts[3].stress -= 15;
           state.vrSystemHealth -= 5;
         },
@@ -603,7 +536,9 @@ const events = [
       },
       {
         text: "Delay the update and continue with the current system.",
-        effects: () => {},
+        effects: () => {
+          // neutral
+        },
         resultText: "Nothing changes; the AI remains functional but distant.",
       },
       {
@@ -787,167 +722,6 @@ const events = [
           state.cohesion += 3;
         },
         resultText: "Shared laughter and stories briefly make the ship feel like home.",
-        resultText: "Hardware tunes up, though the crew feels the extra work.",
-      },
-      {
-        text: "Switch to analog workouts for the week.",
-        effects: (state) => {
-          state.vrSystemHealth -= 5;
-          state.morale -= 2;
-          state.astronauts.forEach((a) => {
-            a.stress -= 2;
-          });
-        },
-        resultText: "Simpler routines give their minds a break.",
-      },
-      {
-        text: "Request remote troubleshooting from Earth.",
-        effects: (state) => {
-          state.nasaSupport -= 8;
-          state.conflictRisk -= 2;
-          state.astronauts.forEach((a) => {
-            a.connection += 2;
-          });
-        },
-        resultText: "HQ responds, but support credits dip.",
-      },
-    ],
-  },
-  {
-    id: "celebration",
-    description: "Crew hits a mission milestone and wants to celebrate.",
-    choices: [
-      {
-        text: "Approve a relaxed movie night.",
-        effects: (state) => {
-          state.morale += 5;
-          state.astronauts.forEach((a) => {
-            a.stress -= 3;
-            a.fatigue -= 2;
-          });
-        },
-        resultText: "Shared laughter boosts morale.",
-      },
-      {
-        text: "Keep schedule tight but allow an extra dessert.",
-        effects: (state) => {
-          state.cohesion += 2;
-          state.morale += 1;
-        },
-        resultText: "A small treat keeps spirits steady without losing time.",
-      },
-    ],
-  },
-  {
-    id: "sleep",
-    description: "Interrupted sleep cycles leave the crew groggy.",
-    choices: [
-      {
-        text: "Rotate naps during low-priority tasks.",
-        effects: (state) => {
-          state.cohesion -= 2;
-          state.astronauts.forEach((a) => {
-            a.fatigue -= 6;
-            a.stress -= 2;
-          });
-        },
-        resultText: "Short naps restore energy but slightly hurt teamwork.",
-      },
-      {
-        text: "Push through with caffeine and discipline.",
-        effects: (state) => {
-          state.morale -= 4;
-          state.astronauts.forEach((a) => {
-            a.fatigue += 4;
-            a.stress += 3;
-          });
-        },
-        resultText: "Everyone powers through, though mood worsens.",
-      },
-    ],
-  },
-  {
-    id: "conflict",
-    description: "Tension rises between two crew members over task priorities.",
-    choices: [
-      {
-        text: "Hold a mediation led by the Medical/Psych specialist.",
-        effects: (state) => {
-          state.cohesion += 6;
-          state.conflictRisk -= 6;
-          state.astronauts[3].stress += 3;
-        },
-        resultText: "Facilitated dialogue cools tempers, though it taxes the mediator.",
-      },
-      {
-        text: "Reassign duties to separate them temporarily.",
-        effects: (state) => {
-          state.cohesion -= 3;
-          state.conflictRisk -= 2;
-          state.astronauts.forEach((a) => {
-            a.connection -= 1;
-          });
-        },
-        resultText: "Distance prevents escalation but frays bonds.",
-      },
-      {
-        text: "Ignore it and hope it passes.",
-        effects: (state) => {
-          state.conflictRisk += 8;
-          state.morale -= 4;
-        },
-        resultText: "Unaddressed tension threatens cohesion.",
-      },
-    ],
-  },
-  {
-    id: "science_win",
-    description: "The scientist completes a difficult experiment early.",
-    choices: [
-      {
-        text: "Celebrate and share the success story with HQ.",
-        effects: (state) => {
-          state.morale += 4;
-          state.nasaSupport += 6;
-          state.astronauts[1].connection += 5;
-        },
-        resultText: "NASA applauds the achievement and morale climbs.",
-      },
-      {
-        text: "Redirect momentum into tackling maintenance backlog.",
-        effects: (state) => {
-          state.cohesion += 3;
-          state.astronauts.forEach((a) => {
-            a.fatigue += 3;
-          });
-        },
-        resultText: "Team tackles chores together while energy lasts.",
-      },
-    ],
-  },
-  {
-    id: "signal_delay",
-    description: "An unexpected signal delay complicates navigation planning.",
-    choices: [
-      {
-        text: "Pilot and engineer run a late-night recalculation.",
-        effects: (state) => {
-          state.cohesion += 1;
-          state.astronauts[0].fatigue += 6;
-          state.astronauts[2].fatigue += 6;
-          state.astronauts[0].stress += 3;
-          state.astronauts[2].stress += 3;
-        },
-        resultText: "Numbers line up again at the cost of sleep.",
-      },
-      {
-        text: "Ask HQ for guidance despite delay.",
-        effects: (state) => {
-          state.nasaSupport -= 6;
-          state.conflictRisk -= 1;
-          state.morale += 1;
-        },
-        resultText: "Support tickets rise but the crew feels reassured.",
       },
     ],
   },
