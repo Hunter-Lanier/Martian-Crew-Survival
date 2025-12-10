@@ -1532,7 +1532,7 @@ function describeDeltas(before, after) {
       const parts = [
         formatDelta("Stress", a.stress - prev.stress),
         formatDelta("Fatigue", a.fatigue - prev.fatigue),
-        formatDelta("Connection", a.connection - prev.connection),
+        formatDelta("Stability", a.connection - prev.connection),
       ].filter(Boolean);
       if (!parts.length) return null;
       return `${a.name}: ${parts.join(", ")}`;
@@ -1819,7 +1819,7 @@ function renderAstronautStats(includeTitle = false) {
     .map(
       (a) => `
         <div class="astronaut">
-          <div class="stat-row"><span class="stat-label">${a.name}</span><span class="stat-value">${a.connection} conn</span></div>
+          <div class="stat-row"><span class="stat-label">${a.name}</span><span class="stat-value">${a.connection} Stability</span></div>
           <div class="stat-row small-text"><span>Stress: ${a.stress}</span><span>Fatigue: ${a.fatigue}</span></div>
         </div>
       `
