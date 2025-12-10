@@ -1813,10 +1813,11 @@ function renderChoices() {
   if (!currentEvent || gameState.isGameOver) return;
 
   const order = shuffleCopy(currentEvent.choices.map((_, i) => i));
-  order.forEach((choiceIndex) => {
+  order.forEach((choiceIndex, displayIndex) => {
     const choice = currentEvent.choices[choiceIndex];
+    const label = String.fromCharCode(65 + displayIndex); // A, B, C...
     const button = document.createElement("button");
-    button.textContent = choice.text;
+    button.textContent = `${label}. ${choice.text}`;
     button.type = "button";
     button.addEventListener("click", () => handleChoice(choiceIndex));
     choicesPanelEl.appendChild(button);
