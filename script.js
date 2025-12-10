@@ -6,6 +6,7 @@ const eventDescriptionEl = document.getElementById("event-description");
 const choicesPanelEl = document.getElementById("choices-panel");
 const resultTextEl = document.getElementById("result-text");
 const learningTextEl = document.getElementById("learning-text");
+const deltaTextEl = document.getElementById("delta-text");
 const startButton = document.getElementById("start-button");
 const nextButton = document.getElementById("next-button");
 
@@ -1396,6 +1397,22 @@ function clamp(value) {
   return Math.max(0, Math.min(100, value));
 }
 
+function snapshotState(state) {
+  return {
+    cohesion: state.cohesion,
+    morale: state.morale,
+    conflictRisk: state.conflictRisk,
+    nasaSupport: state.nasaSupport,
+    vrSystemHealth: state.vrSystemHealth,
+    astronauts: state.astronauts.map((a) => ({
+      name: a.name,
+      stress: a.stress,
+      fatigue: a.fatigue,
+      connection: a.connection,
+    })),
+  };
+}
+
 function shuffleCopy(arr) {
   const copy = arr.slice();
   for (let i = copy.length - 1; i > 0; i -= 1) {
@@ -1433,12 +1450,50 @@ function randomBetween(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function formatDelta(label, delta) {
+  if (delta === 0) return null;
+  const sign = delta > 0 ? "+" : "";
+  return `${label} ${sign}${delta}`;
+}
+
+function describeDeltas(before, after) {
+  const deltas = [];
+  const core = [
+    formatDelta("Cohesion", after.cohesion - before.cohesion),
+    formatDelta("Morale", after.morale - before.morale),
+    formatDelta("Conflict Risk", after.conflictRisk - before.conflictRisk),
+    formatDelta("NASA Support", after.nasaSupport - before.nasaSupport),
+    formatDelta("VR System", after.vrSystemHealth - before.vrSystemHealth),
+  ].filter(Boolean);
+
+  if (core.length) deltas.push(core.join(", "));
+
+  const astroDeltas = after.astronauts
+    .map((a, idx) => {
+      const prev = before.astronauts[idx];
+      const parts = [
+        formatDelta("Stress", a.stress - prev.stress),
+        formatDelta("Fatigue", a.fatigue - prev.fatigue),
+        formatDelta("Connection", a.connection - prev.connection),
+      ].filter(Boolean);
+      if (!parts.length) return null;
+      return `${a.name}: ${parts.join(", ")}`;
+    })
+    .filter(Boolean);
+
+  if (astroDeltas.length) deltas.push(astroDeltas.join(" | "));
+
+  if (!deltas.length) return "No stat changes.";
+  return `Changes: ${deltas.join(" · ")}`;
+}
+
 function startGame() {
   gameState = createInitialState();
   currentEvent = null;
   waitingForChoice = false;
   resultTextEl.textContent = "";
   learningTextEl.textContent = "";
+  deltaTextEl.textContent = "";
   startButton.disabled = true;
   nextButton.disabled = true;
   nextButton.textContent = "Next";
@@ -1466,6 +1521,7 @@ function startTurn() {
   waitingForChoice = true;
   resultTextEl.textContent = "";
   learningTextEl.textContent = "";
+  deltaTextEl.textContent = "";
   render();
   renderChoices();
   nextButton.disabled = true;
@@ -1473,15 +1529,13 @@ function startTurn() {
 
 function applyWearAndTear() {
   gameState.astronauts.forEach((astronaut) => {
-    astronaut.stress += randomBetween(1, 2);
-    astronaut.fatigue += randomBetween(1, 2);
+    astronaut.stress += randomBetween(2, 3);
+    astronaut.fatigue += randomBetween(2, 3);
   });
 
-  if (gameState.month % 3 === 0) {
-    gameState.morale -= 1;
-  }
+  gameState.morale -= 1;
 
-  gameState.conflictRisk += 1;
+  gameState.conflictRisk += 2;
   clampState(gameState);
 }
 
@@ -1583,6 +1637,7 @@ function handleChoice(choiceIndex) {
   const choice = currentEvent.choices[choiceIndex];
   if (!choice) return;
 
+  const before = snapshotState(gameState);
   choice.effects(gameState);
   clampState(gameState);
 
@@ -1594,6 +1649,7 @@ function handleChoice(choiceIndex) {
 
   resultTextEl.textContent = choice.resultText || "Decision logged.";
   learningTextEl.textContent = choice.learningText || "";
+  deltaTextEl.textContent = describeDeltas(before, snapshotState(gameState));
   waitingForChoice = false;
   nextButton.disabled = false;
   disableChoiceButtons();
@@ -1641,6 +1697,7 @@ function endGame(resultType, reason = "") {
   eventDescriptionEl.innerHTML = `<strong>${title}</strong><br>${description}`;
   resultTextEl.textContent = "";
   learningTextEl.textContent = "";
+  deltaTextEl.textContent = "";
   renderEndSummary();
 }
 
@@ -1663,6 +1720,7 @@ function renderIntro() {
   eventDescriptionEl.textContent =
     "Guide your four-person crew across 17 months. Each decision affects morale, cohesion, stress, and support.";
   learningTextEl.textContent = "";
+  deltaTextEl.textContent = "";
 }
 
 function render() {
