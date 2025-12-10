@@ -12,6 +12,7 @@ const nextButton = document.getElementById("next-button");
 
 let gameState;
 let currentEvent = null;
+let currentChoicesShuffled = [];
 let waitingForChoice = false;
 
 const difficultyLevels = {
@@ -1528,6 +1529,7 @@ function describeDeltas(before, after) {
 function startGame() {
   gameState = createInitialState();
   currentEvent = null;
+  currentChoicesShuffled = [];
   waitingForChoice = false;
   resultTextEl.textContent = "";
   learningTextEl.textContent = "";
@@ -1556,6 +1558,12 @@ function startTurn() {
     return;
   }
   currentEvent = getNextEventForPhase();
+  currentChoicesShuffled = shuffleCopy(
+    currentEvent.choices.map((choice, originalIndex) => ({
+      choice,
+      originalIndex,
+    }))
+  );
   waitingForChoice = true;
   resultTextEl.textContent = "";
   learningTextEl.textContent = "";
@@ -1812,14 +1820,20 @@ function renderChoices() {
   choicesPanelEl.innerHTML = "";
   if (!currentEvent || gameState.isGameOver) return;
 
-  const order = shuffleCopy(currentEvent.choices.map((_, i) => i));
-  order.forEach((choiceIndex, displayIndex) => {
-    const choice = currentEvent.choices[choiceIndex];
+  const choicesToRender =
+    currentChoicesShuffled && currentChoicesShuffled.length
+      ? currentChoicesShuffled
+      : currentEvent.choices.map((choice, originalIndex) => ({
+          choice,
+          originalIndex,
+        }));
+
+  choicesToRender.forEach(({ choice, originalIndex }, displayIndex) => {
     const label = String.fromCharCode(65 + displayIndex); // A, B, C...
     const button = document.createElement("button");
     button.textContent = `${label}. ${choice.text}`;
     button.type = "button";
-    button.addEventListener("click", () => handleChoice(choiceIndex));
+    button.addEventListener("click", () => handleChoice(originalIndex));
     choicesPanelEl.appendChild(button);
   });
 }
