@@ -65,8 +65,8 @@ const difficultyLevels = {
     dangerStress: 70,
     dangerCohesion: 25,
     dangerMorale: 25,
-    dangerFatigue: 75,
-    loseStress: 80,
+    dangerFatigue: 100,
+    loseStress: 10,
   },
 };
 
@@ -1832,11 +1832,13 @@ function renderChoices() {
   choicesPanelEl.innerHTML = "";
   if (!currentEvent || gameState.isGameOver) return;
 
-  currentEvent.choices.forEach((choice, index) => {
+  const order = shuffleCopy(currentEvent.choices.map((_, i) => i));
+  order.forEach((choiceIndex) => {
+    const choice = currentEvent.choices[choiceIndex];
     const button = document.createElement("button");
     button.textContent = choice.text;
     button.type = "button";
-    button.addEventListener("click", () => handleChoice(index));
+    button.addEventListener("click", () => handleChoice(choiceIndex));
     choicesPanelEl.appendChild(button);
   });
 }
