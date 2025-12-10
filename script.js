@@ -14,6 +14,64 @@ let gameState;
 let currentEvent = null;
 let waitingForChoice = false;
 
+const difficultyLevels = {
+  normal: {
+    label: "Normal",
+    wearMultiplier: 1,
+    dangerStress: 90,
+    dangerCohesion: 10,
+    dangerMorale: 10,
+    dangerFatigue: 95,
+    loseStress: 100,
+    loseFatigue: 100,
+    loseConflictRisk: 110, // effectively disabled at normal
+  },
+  hard: {
+    label: "Hard",
+    wearMultiplier: 1.35,
+    dangerStress: 85,
+    dangerCohesion: 15,
+    dangerMorale: 15,
+    dangerFatigue: 90,
+    loseStress: 95,
+    loseFatigue: 98,
+    loseConflictRisk: 95,
+  },
+  veryHard: {
+    label: "Very Hard",
+    wearMultiplier: 1.5,
+    dangerStress: 80,
+    dangerCohesion: 20,
+    dangerMorale: 20,
+    dangerFatigue: 85,
+    loseStress: 90,
+    loseFatigue: 95,
+    loseConflictRisk: 90,
+  },
+  impossible: {
+    label: "Impossible",
+    wearMultiplier: 1.75,
+    dangerStress: 75,
+    dangerCohesion: 25,
+    dangerMorale: 25,
+    dangerFatigue: 80,
+    loseStress: 85,
+    loseFatigue: 92,
+    loseConflictRisk: 85,
+  },
+  insane: {
+    label: "Insane",
+    wearMultiplier: 2,
+    dangerStress: 70,
+    dangerCohesion: 25,
+    dangerMorale: 25,
+    dangerFatigue: 75,
+    loseStress: 80,
+  },
+};
+
+const difficulty = difficultyLevels.insane;
+
 function removeElement(element) {
   if (!element) return;
   if (typeof element.remove === "function") {
@@ -1529,13 +1587,13 @@ function startTurn() {
 
 function applyWearAndTear() {
   gameState.astronauts.forEach((astronaut) => {
-    astronaut.stress += randomBetween(2, 3);
-    astronaut.fatigue += randomBetween(2, 3);
+    astronaut.stress += Math.round(randomBetween(2, 3) * difficulty.wearMultiplier);
+    astronaut.fatigue += Math.round(randomBetween(2, 3) * difficulty.wearMultiplier);
   });
 
-  gameState.morale -= 1;
+  gameState.morale -= Math.max(1, Math.round(1 * difficulty.wearMultiplier));
 
-  gameState.conflictRisk += 2;
+  gameState.conflictRisk += Math.max(1, Math.round(2 * difficulty.wearMultiplier));
   clampState(gameState);
 }
 
@@ -1552,10 +1610,10 @@ function getAverageFatigue(state) {
 function getDangerEventIfAny() {
   const avgStress = getAverageStress(gameState);
   const avgFatigue = getAverageFatigue(gameState);
-  if (avgStress >= 90) return eventCatalog.danger.highStress;
-  if (gameState.cohesion <= 10) return eventCatalog.danger.lowCohesion;
-  if (gameState.morale <= 10) return eventCatalog.danger.lowMorale;
-  if (avgFatigue >= 95) return eventCatalog.danger.highFatigue;
+  if (avgStress >= difficulty.dangerStress) return eventCatalog.danger.highStress;
+  if (gameState.cohesion <= difficulty.dangerCohesion) return eventCatalog.danger.lowCohesion;
+  if (gameState.morale <= difficulty.dangerMorale) return eventCatalog.danger.lowMorale;
+  if (avgFatigue >= difficulty.dangerFatigue) return eventCatalog.danger.highFatigue;
   return null;
 }
 
@@ -1674,8 +1732,13 @@ function checkLoseConditions() {
   if (gameState.morale <= 0) return "Crew morale depleted.";
   if (gameState.nasaSupport <= 0) return "NASA support exhausted.";
 
-  const stressed = gameState.astronauts.find((a) => a.stress >= 100);
+  const stressed = gameState.astronauts.find((a) => a.stress >= difficulty.loseStress);
   if (stressed) return `${stressed.name}'s stress reached critical levels.`;
+
+  const exhausted = gameState.astronauts.find((a) => a.fatigue >= difficulty.loseFatigue);
+  if (exhausted) return `${exhausted.name}'s fatigue reached critical levels.`;
+
+  if (gameState.conflictRisk >= difficulty.loseConflictRisk) return "Conflict risk spiked beyond safe limits.";
   return null;
 }
 

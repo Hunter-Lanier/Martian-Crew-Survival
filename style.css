@@ -86,10 +86,36 @@ body {
 }
 
 #result-panel {
-  min-height: 40px;
-  font-style: italic;
+  min-height: 60px;
   margin-top: 10px;
-  color: #a8f3a8;
+  padding: 10px 12px;
+  border: 1px solid #2c852c;
+  border-radius: 4px;
+  background: rgba(12, 18, 12, 0.35);
+}
+
+#result-text {
+  margin: 0 0 6px 0;
+  font-weight: 600;
+  color: #d8ffd8;
+}
+
+#learning-text {
+  margin: 0 0 6px 0;
+  padding-left: 8px;
+  border-left: 2px solid #2c852c;
+  color: #8fd4ff;
+  font-style: italic;
+}
+
+#delta-text {
+  margin: 0;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: rgba(44, 133, 44, 0.1);
+  color: #ffd68a;
+  font-family: "Fira Code", "Courier New", monospace;
+  font-size: 0.92rem;
 }
 
 #control-panel {
